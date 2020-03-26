@@ -12,7 +12,7 @@ static boost::minstd_rand generator(42u);
 static boost::uniform_real<> uni_dist(0,1); 
 boost::variate_generator<boost::minstd_rand&,boost::uniform_real<> > uni(generator,uni_dist); 
 
-float random_variate() {
+kdtree2::KDFloat random_variate() {
   // between [0,1)
   return(uni()); 
 }
@@ -20,14 +20,14 @@ float random_variate() {
 //
 // define, for convenience a 2d array of floats. 
 //
-typedef boost::multi_array<float,2> array2dfloat;
+typedef boost::multi_array<kdtree2::KDFloat,2> array2dfloat;
 
 
 #include <ctime>
 
-float time_a_search(kdtree2::KDTree* tree, int nn, int nsearch) {
+kdtree2::KDFloat time_a_search(kdtree2::KDTree* tree, int nn, int nsearch) {
   int dim = tree->dim;
-  std::vector<float> query(dim);
+  std::vector<kdtree2::KDFloat> query(dim);
   kdtree2::KDTreeResultVector result; 
 
   clock_t t0, t1; 
@@ -41,7 +41,7 @@ float time_a_search(kdtree2::KDTree* tree, int nn, int nsearch) {
 
   t1 = clock(); 
 
-  return(static_cast<float> 
+  return(static_cast<kdtree2::KDFloat> 
 	 (static_cast<double> (t1-t0) / static_cast<double> (CLOCKS_PER_SEC) ));
 }
 
@@ -51,12 +51,12 @@ void time_random_searches(kdtree2::KDTree* tree, int nn) {
 
   nsearch = 50;
   for(;;) {
-    float t = time_a_search(tree,nn,nsearch); 
+    kdtree2::KDFloat t = time_a_search(tree,nn,nsearch); 
     if (t < 1.0) {
       nsearch *= 5; 
       continue; 
     } else {
-      float sps = float(nsearch) / t ;
+      kdtree2::KDFloat sps = kdtree2::KDFloat(nsearch) / t ;
       std::cout << "C++ impl, for nn=" << nn << " searches/sec = " << sps << "\n";
       return;
     }
@@ -75,7 +75,7 @@ int main() {
   if (false) {
     for (int i=0; i<10; i++) {
       for (int j=0; j<3; j++)
-	data[i][j] = static_cast<float> (3*i+j);
+	data[i][j] = static_cast<kdtree2::KDFloat> (3*i+j);
     }
     tree = new kdtree2::KDTree(data,true); 
     
@@ -104,7 +104,7 @@ int main() {
   tree->sort_results = true;
   std::cout << "Tree created, now testing against brute force..."; 
   {
-    std::vector<float> query(dim); 
+    std::vector<kdtree2::KDFloat> query(dim); 
     kdtree2::KDTreeResultVector result, resultbrute;
     int nn = 10; 
 
